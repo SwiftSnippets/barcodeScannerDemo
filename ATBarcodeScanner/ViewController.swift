@@ -30,8 +30,9 @@ class ViewController: UIViewController {
             self.captureSession.beginConfiguration()
             
             let output = AVCaptureMetadataOutput()
+            
             if let device = AVCaptureDevice.default(for: .video),
-                let input = try? AVCaptureDeviceInput.init(device: device),
+                let input = try? AVCaptureDeviceInput(device: device),
                 self.captureSession.canAddInput(input) && self.captureSession.canAddOutput(output) {
                 self.captureSession.addInput(input)
                 self.captureSession.addOutput(output)
@@ -59,12 +60,12 @@ class ViewController: UIViewController {
             
             self.captureSession.commitConfiguration()
             
-            self.captureSession.startRunning()
-            
             DispatchQueue.main.async {
                 self.setupPreviewLayer(session: self.captureSession)
                 self.setupBoundingBox()
             }
+            
+            self.captureSession.startRunning()
         }
     }
     
@@ -106,17 +107,17 @@ class ViewController: UIViewController {
     }
     
     private var resetTimer: Timer?
-    private func resetViews() {
-        boundingBox.isHidden = true
-        resultsLabel.text = nil
-    }
-    
     fileprivate func hideBoundingBox(after: Double) {
         resetTimer?.invalidate()
         resetTimer = Timer.scheduledTimer(withTimeInterval: TimeInterval() + after,
                                           repeats: false) {
                                             [weak self] (timer) in
                                             self?.resetViews() }
+    }
+    
+    private func resetViews() {
+        boundingBox.isHidden = true
+        resultsLabel.text = nil
     }
 }
 
